@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTechno Zikirmatik</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .zikirmatik-container {
+            position: relative;
+            margin: 30px auto;
+            width: 300px;
+            height: 200px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .zikirmatik-container:active {
+            transform: scale(0.95);
+        }
+        
+        .zikirmatik-frame {
+            width: 100%;
+            height: 100%;
+            background-color: #2c3e50;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 3px solid #34495e;
+        }
+        
+        .counter-display {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #f1c40f;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+        }
+        
+        .zikirmatik-label {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #ecf0f1;
+            font-size: 1.2rem;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+        }
+        
+        .settings-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .settings-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+        
+        .settings-panel {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            text-align: left;
+        }
+        
+        .settings-panel h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            color: #f1c40f;
+        }
+        
+        .setting-item {
+            margin-bottom: 15px;
+        }
+        
+        .setting-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .setting-item input, .setting-item select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .goal-notification {
+            background-color: #2ecc71;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .history {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .history-item {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MTechno Zikirmatik</h1>
+        
+        <div class="zikirmatik-container" id="zikirmatik">
+            <div class="zikirmatik-frame">
+                <div class="counter-display" id="counter">0</div>
+                <div class="zikirmatik-label">Zikir Sayacı</div>
+            </div>
+        </div>
+        
+        <div class="goal-notification" id="goalNotification">Hedefe ulaşıldı! 🎉</div>
+        
+        <div class="buttons">
+            <button class="reset-btn" id="resetBtn">Sıfırla</button>
+            <button class="settings-btn" id="settingsBtn">Ayarlar</button>
+        </div>
+        
+        <div class="settings-panel" id="settingsPanel">
+            <h3>Ayarlar</h3>
+            
+            <div class="setting-item">
+                <label for="soundToggle">Ses Efekti</label>
+                <select id="soundToggle">
+                    <option value="on">Açık</option>
+                    <option value="off">Kapalı</option>
+                </select>
+            </div>
+            
+            <div class="setting-item">
+                <label for="vibrationToggle">Titreşim</label>
+                <select id="vibrationToggle">
+                    <option value="on">Açık</option>
+                    <option value="off">Kapalı</option>
+                </select>
+            </div>
+            
+            <div class="setting-item">
+                <label for="goalInput">Hedef Sayı</label>
+                <input type="number" id="goalInput" min="1" value="100">
+            </div>
+            
+            <div class="setting-item">
+                <label for="incrementAmount">Artış Miktarı</label>
+                <select id="incrementAmount">
+                    <option value="1">1</option>
+                    <option value="10">10</option>
+                    <option value="33">33</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+            
+            <div class="setting-item">
+                <label for="themeSelect">Tema</label>
+                <select id="themeSelect">
+                    <option value="default">Varsayılan</option>
+                    <option value="green">Yeşil</option>
+                    <option value="blue">Mavi</option>
+                    <option value="purple">Mor</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="todayCount">0</div>
+                <div class="stat-label">Bugün</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Toplam</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="goalProgress">0%</div>
+                <div class="stat-label">Hedef</div>
+            </div>
+        </div>
+        
+        <div class="history">
+            <h4>Son Zikirler</h4>
+            <div id="historyList"></div>
+        </div>
+        
+        <footer>
+            YT@MTechnoW - MTechno Zikirmatik
+        </footer>
+    </div>
+
+    <script>
+        // DOM elementlerini seçme
+        const zikirmatik = document.getElementById('zikirmatik');
+        const counterDisplay = document.getElementById('counter');
+        const resetBtn = document.getElementById('resetBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const goalNotification = document.getElementById('goalNotification');
+        const todayCount = document.getElementById('todayCount');
+        const totalCount = document.getElementById('totalCount');
+        const goalProgress = document.getElementById('goalProgress');
+        const historyList = document.getElementById('historyList');
+        
+        // Ayarlar elementleri
+        const soundToggle = document.getElementById('soundToggle');
+        const vibrationToggle = document.getElementById('vibrationToggle');
+        const goalInput = document.getElementById('goalInput');
+        const incrementAmount = document.getElementById('incrementAmount');
+        const themeSelect = document.getElementById('themeSelect');
+        
+        // Ses efekti
+        const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
+        
+        // Zikir sayacı değişkenleri
+        let count = 0;
+        let today = 0;
+        let total = 0;
+        let goal = 100;
+        let increment = 1;
+        
+        // Sayfa yüklendiğinde localStorage'dan verileri yükle
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            updateDisplay();
+            updateHistory();
+            updateStats();
+            
+            // Bugünün tarihini kontrol et
+            const todayDate = new Date().toDateString();
+            const lastDate = localStorage.getItem('lastDate');
+            
+            if (lastDate !== todayDate) {
+                // Yeni gün, bugünkü sayacı sıfırla
+                today = 0;
+                localStorage.setItem('todayCount', '0');
+                localStorage.setItem('lastDate', todayDate);
+            }
+        });
+        
+        // Zikirmatiğe tıklama olayı
+        zikirmatik.addEventListener('click', () => {
+            // Sayacı artır
+            count += parseInt(incrementAmount.value);
+            today += parseInt(incrementAmount.value);
+            total += parseInt(incrementAmount.value);
+            
+            // Görseli güncelle
+            updateDisplay();
+            
+            // Ses efekti
+            if (soundToggle.value === 'on') {
+                clickSound.play().catch(e => console.log("Ses çalınamadı: ", e));
+            }
+            
+            // Titreşim efekti
+            if (vibrationToggle.value === 'on' && 'vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+            
+            // Hedef kontrolü
+            if (count >= parseInt(goalInput.value)) {
+                goalNotification.style.display = 'block';
+                setTimeout(() => {
+                    goalNotification.style.display = 'none';
+                }, 3000);
+            }
+            
+            // LocalStorage'a kaydet
+            saveToStorage();
+            updateStats();
+            addToHistory();
+        });
+        
+        // Sıfırlama butonu
+        resetBtn.addEventListener('click', () => {
+            count = 0;
+            updateDisplay();
+            saveToStorage();
+        });
+        
+        // Ayarlar butonu
+        settingsBtn.addEventListener('click', () => {
+            if (settingsPanel.style.display === 'block') {
+                settingsPanel.style.display = 'none';
+            } else {
+                settingsPanel.style.display = 'block';
+            }
+        });
+        
+        // Ayarlar değişiklikleri
+        goalInput.addEventListener('change', () => {
+            goal = parseInt(goalInput.value);
+            updateStats();
+            saveToStorage();
+        });
+        
+        themeSelect.addEventListener('change', () => {
+            changeTheme(themeSelect.value);
+            saveToStorage();
+        });
+        
+        // Görseli güncelleme fonksiyonu
+        function updateDisplay() {
+            counterDisplay.textContent = count;
+        }
+        
+        // İstatistikleri güncelleme fonksiyonu
+        function updateStats() {
+            todayCount.textContent = today;
+            totalCount.textContent = total;
+            
+            const progress = Math.min(100, Math.round((count / parseInt(goalInput.value)) * 100));
+            goalProgress.textContent = `${progress}%`;
+        }
+        
+        // Geçmişi güncelleme fonksiyonu
+        function updateHistory() {
+            const history = JSON.parse(localStorage.getItem('zikirHistory') || '[]');
+            historyList.innerHTML = '';
+            
+            history.slice(-5).forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.textContent = `${item.date} - ${item.count} zikir`;
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Geçmişe ekleme fonksiyonu
+        function addToHistory() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+            
+            const history = JSON.parse(localStorage.getItem('zikirHistory') || '[]');
+            history.push({
+                date: dateString,
+                count: count
+            });
+            
+            localStorage.setItem('zikirHistory', JSON.stringify(history));
+            updateHistory();
+        }
+        
+        // LocalStorage'dan yükleme fonksiyonu
+        function loadFromStorage() {
+            count = parseInt(localStorage.getItem('zikirCount') || '0');
+            today = parseInt(localStorage.getItem('todayCount') || '0');
+            total = parseInt(localStorage.getItem('totalCount') || '0');
+            goal = parseInt(localStorage.getItem('goal') || '100');
+            increment = parseInt(localStorage.getItem('increment') || '1');
+            
+            soundToggle.value = localStorage.getItem('sound') || 'on';
+            vibrationToggle.value = localStorage.getItem('vibration') || 'on';
+            goalInput.value = goal;
+            incrementAmount.value = increment;
+            themeSelect.value = localStorage.getItem('theme') || 'default';
+            
+            changeTheme(themeSelect.value);
+        }
+        
+        // LocalStorage'a kaydetme fonksiyonu
+        function saveToStorage() {
+            localStorage.setItem('zikirCount', count.toString());
+            localStorage.setItem('todayCount', today.toString());
+            localStorage.setItem('totalCount', total.toString());
+            localStorage.setItem('goal', goalInput.value);
+            localStorage.setItem('increment', incrementAmount.value);
+            localStorage.setItem('sound', soundToggle.value);
+            localStorage.setItem('vibration', vibrationToggle.value);
+            localStorage.setItem('theme', themeSelect.value);
+        }
+        
+        // Tema değiştirme fonksiyonu
+        function changeTheme(theme) {
+            const body = document.body;
+            
+            switch(theme) {
+                case 'green':
+                    body.style.background = 'linear-gradient(135deg, #1a2a6c, #2d7a2d, #4CAF50)';
+                    break;
+                case 'blue':
+                    body.style.background = 'linear-gradient(135deg, #1a2a6c, #2980b9, #3498db)';
+                    break;
+                case 'purple':
+                    body.style.background = 'linear-gradient(135deg, #1a2a6c, #8e44ad, #9b59b6)';
+                    break;
+                default:
+                    body.style.background = 'linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d)';
+            }
+        }
+    </script>
+</body>
+</html>
